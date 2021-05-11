@@ -1,68 +1,60 @@
-﻿//run the LoadTable function when the page has loaded
-//$(document).ready(function () {
-//    //alert("hi"); checked the file is linked or not
-//    LoadTable();
-//});
-
-const uri = "/api/Cars"; //the api as a global variable
+﻿
+const uri = "/api/Cars"; //the api as a controller name
 // alert("API " + uri);
-let allCar = null; //holds the data in a global
-//Loads up the <p id="counter"> </p> with a count of the staff, data come from the LoadTable Function where this is called
-function getCount(data) {
-    // alert("getcount " + datas);
-    const theCount = $("#counter"); //bind TheCount to the counter
-    if (data) { //if any data exists
-        // alert("We have data " + data);
-        theCount.text("There are " + data + " Cars");
-    } else {
-        theCount.text("There are no Cars");
-        alert("No data");
-    }
+let allCar = null; //holds the data 
+
+
+function getCounted(data) {
+   
 }
-//this function reloads the table of staff after any changes
+//this function reloads the table 
 function LoadTable() {
     $.ajax({
         type: "GET", //use the GET controller
-        url: uri, //the uri from the global
-        cache: false, //don't cache the data in browser reloads, get a fresh copy
+        url: uri, 
+        cache: false, 
         success: function (data) { //if the request succeeds ....
             const tBody = $("#allCar"); //for the tbody bind with allcar <tbody id="allcar"></tbody>
-            allCar = data; //pass in all the data to the global allcar use it in Edit
+            allCar = data; //pass in all the data to allcar use it in Edit
             $(tBody).empty(); //empty out old data
-            getCount(data.length); //count for the counter function
-            //a foreach through the rows creating table data
+            getCounted(data.length); //counted for the  function
+            //foreach data will appear in rows
             $.each(data,
                 function (key, item) {
                     const tr = $("<tr></tr>")
-                        .append($("<td></td>").text(item.name)) //inserts content in the tags
+                        .append($("<td></td>").text(item.name)) //fill content in the tags
                         .append($("<td></td>").text(item.model))
                         .append($("<td></td>").text(item.year))
                         .append($("<td></td>").text(item.color))
                         .append($("<td></td>")
-                            .append($("<button href='#editCarModal' class='btn-success' data-toggle='modal'><i class='material-icons' data-toggle='tooltip' title='Edit'>&#xE254;</i></button>)")
-                                .on("click",
-                                    function () {
-                                        editItem(item.id);
-                                    }) //in the empty cell append in an edititem button
-                            )
-                        )
-                        .append(
-                            $("<td></td>")
-                                .append(
-                                    $('<button  href="#deleteCarModal" data-toggle="modal" class="btn-success" ><i class="material - icons" data-toggle="tooltip" title="Delete">&#xE872;</i></button>')
-                                        .on("click", function () {
-                                            $("#delete-id").val(item.id);
-                                        }
-                                            //in an empty cell add in a deleteitem button
-                                        )
+                            //creating link for editing data
+                            .append($("<a href='#editCarModal' data-toggle='modal'><i class='material-icons' style='font-size:30px; color: blue;' title='Edit'>&#xE254;</i></a>)")
+                              
+                                    .on("click",
+                                        function () {
+                                            editItem(item.id);
+                                        }) 
                                 )
-                        );
+                            )
+                            .append($("<td></td>") //creating link for delete data
+                                .append($("<a  href='#deleteCarModal' data-toggle='modal'><i class='material-icons' style='font-size:30px; color: red;' data-toggle='tooltip' title='Delete'>&#xE872;</i></a>)")
+                                   
+                                                    .on("click", function () {
+                                                        $("#delete-id").val(item.id);
+                                                    }
+                                                        
+                                                    )
+                                        
+                                )
+                            
+                            
+                             );
                     tr.appendTo(tBody);//add all the rows to the tbody
                 });
         }
     });
 }
-//Add an person to the database
+//Add an Information of car to the database
 function addItem() {
     const item = {
         name: $("#add-name").val(),
@@ -71,16 +63,16 @@ function addItem() {
         color: $("#add-color").val(),
     };
     $.ajax({
-        type: "POST", //this calls the POST in the API controller
+        type: "POST", //Here the POST is calles in the API controller
         accepts: "application/json",
         url: uri,
         contentType: "application/json",
         data: JSON.stringify(item),
         //if there is an error
         error: function (jqXHR, textStatus, errorThrown) {
-            alert("Something went wrong!");
+            alert("Something went wrong !!");
         },
-        //if it is successful
+        //if it is successfully added
         success: function (result) {
             LoadTable();
             $("#add-name").val(""); //clear entry boxes
@@ -88,16 +80,16 @@ function addItem() {
             $("#add-year").val("");
             $("#add-color").val("");
 
-            alert("Car Detail added successfully");
+            alert("Car Detail added successfully !!");
         }
     });
 }
-//Delete a person from the database
+//Delete car detail from the database
 function deleteItem(id) {
 
     $.ajax({
         url: uri + "/" + id, //add the ID to the end of the URI
-        type: "DELETE", //this calls the DELETE in the API controller
+        type: "DELETE", //Here DELETE is called in the API controller
         success: function (result) {
             LoadTable();
         }
@@ -116,7 +108,7 @@ function editItem(id) {
             }
         });
 }
-//$(".my-form").on("submit", //saving the edit to the db
+//$(".my-form").on("submit", //saving the edited information in database
 function saveItem() {
     const item = { //pass all the data on the form to a variable called item use later to send to server
         name: $("#edit-name").val(),
@@ -125,7 +117,8 @@ function saveItem() {
         color: $("#edit-color").val(),
         id: $("#edit-id").val()
     };
-   // alert($("#edit-color").val());
+    alert("Information updated successfully!!");
+
     $.ajax({
         url: uri+"/"+$("#edit-id").val(), //add the row id to the uri
         type: "PUT", //send it to the PUT controller
@@ -136,9 +129,12 @@ function saveItem() {
             alert("Something went wrong!");
         },
         success: function (result) {
+          
             alert("data upated successfully!!");
             LoadTable(); //load the table fresh
         }
     });
     return false;
 };
+
+
